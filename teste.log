@@ -1,0 +1,1 @@
+[{"id": 1, "violations": [], "status": "Success"}, {"id": 2, "violations": ["low-score", "doubled-transactions"], "status": "Fail"}, {"id": 3, "violations": ["minimum-installments", "doubled-transactions"], "status": "Fail"}]
