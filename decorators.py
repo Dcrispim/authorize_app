@@ -2,15 +2,21 @@ from typing import Callable
 
 
 def rule(func:Callable)->Callable:
-	def inner1(transaction:dict, **kwargs)-> dict: 
-		if len(func(transaction,**kwargs)):
-			try:
-				transaction["violations"].append(func(transaction,**kwargs))
-			except KeyError:
-				transaction["violations"]=[]
-				transaction["violations"].append(func(transaction,**kwargs))
+	"""Decorator who adds violations if rule return it
+	
+	Arguments:
+		func {Callable} -- Rule function
+	
+	Returns:
+		Callable -- operation with violations added
+	"""			
+	def inner1(operation:dict, **kwargs)-> dict: 
+		if len(func(operation,**kwargs)):
+			if "violations" not in operation.keys():
+				operation["violations"]=[]
+			operation["violations"].append(func(operation,**kwargs))
 
-		return transaction 
+		return operation 
 
 	return inner1
 

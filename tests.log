@@ -1,0 +1,5 @@
+{"id": 1, "violations": []}
+{"id": 1, "violations": ["doubled-transactions"]}
+{"id": 2, "violations": ["low-score"]}
+{"id": 3, "violations": ["minimum-installments"]}
+{"id": 3, "violations": ["minimum-installments"]}
