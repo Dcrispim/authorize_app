@@ -1,5 +1,5 @@
 import json
-from typing import Dict
+from typing import Callable, Dict
 from rules import (
     compromised_income,
     doubled_transactions,
@@ -8,7 +8,6 @@ from rules import (
 )
 
 OPERATIONS: dict = {}
-
 
 def isJson(string: str) -> bool:
     try:
@@ -41,32 +40,43 @@ def verifyRules(operation: dict, rules: list, index: int = 0, **kwargs) -> dict:
         return operation
 
 
-def addCreditOperation(operation: str) -> str:
-    if isJson(operation):
-        transaction = json.loads(operation)
+def makeOperations(json_operations: str, list_rules: list, database) -> list:
+    if isJson(json_operations.replace("'", '"')):
+        list_operations = json.loads(json_operations.replace("'", '"'))
+        finish_operations = []
 
-        list_rules = [
-            compromised_income,
-            low_score,
-            minimum_installments,
-            doubled_transactions,
-        ]
+        if type(list_operations) == list:
+            for op in list_operations:
+                line = verifyRules(op, list_rules, database=database,)
 
-        operation_verified = verifyRules(
-            transaction, list_rules, db_operations=OPERATIONS,
-        )
+                finish_operations.append(line)
 
-        response = {
-            "id": operation_verified["transaction"]["id"],
-            "violations": operation_verified["violations"],
-        }
+        elif type(list_operations) == dict:
+            finish_operations.append(
+                verifyRules(list_operations, list_rules, database=database,)
+            )
 
-        if len(operation_verified["violations"]) == 0:
-            del operation_verified["violations"]
-            OPERATIONS[
-                str(operation_verified["transaction"]["id"])
-            ] = operation_verified
-
-        return str(response).replace("'", '"')
+        return finish_operations
     else:
-        raise TypeError(f"The '{operation}' is not a json line")
+        raise TypeError(f"The '{json_operations}' is not a json line")
+
+
+
+#Operations
+def addCreditOperation(json_operation:str) -> list:
+    list_rules = [compromised_income, doubled_transactions, low_score, minimum_installments]
+
+    responses = []
+
+    for line in makeOperations(json_operation, list_rules, database=OPERATIONS):
+        line_transaction = line["transaction"]
+
+        if len(line["violations"])==0:
+            OPERATIONS[line_transaction["id"]] = line_transaction
+        
+        responses.append({"id":line_transaction["id"],"violations":line["violations"] })
+    
+    return responses
+
+
+#End Operations

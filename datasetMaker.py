@@ -1,18 +1,6 @@
 from random import randint
 
 def makeDataset(limit=500):
-    operation_template = {
-            "transaction": {
-                "id": int,
-                "consumer_id": int,
-                "score": int,
-                "income": int,
-                "requested_value": int,
-                "installments": int,
-                "time": "2019-02-13T10:00:00.000Z",
-            }
-            
-        }
     dataset= []
     for line in range(limit):
         operation = {"transaction": {
@@ -29,7 +17,6 @@ def makeDataset(limit=500):
         dataset.append(operation)
         if randint(0,100)%3 ==0:
             dataset.append(operation)
+
     return dataset
 
-with open("dataset.dt",'w') as File:
-    File.write('\n'.join([str(line) for line in makeDataset()]).strip().replace("'",'"'))

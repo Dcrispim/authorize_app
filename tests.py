@@ -64,7 +64,7 @@ class Test_Rules(TestCase):
 
     def test_doubled_transactions_fail(self):
 
-        db_operations = {"1": self.credit_trasaction_pass}
+        database = {1: self.credit_trasaction_pass["transaction"]}
         response = {}
         transaction = {
             "transaction": {
@@ -82,7 +82,7 @@ class Test_Rules(TestCase):
         response["violations"] = ["doubled-transactions"]
 
         self.assertEqual(
-            doubled_transactions(transaction, db_operations=db_operations), response
+            doubled_transactions(transaction, database=database), response
         )
 
 
@@ -140,8 +140,7 @@ class Test_Operations(TestCase):
             addCreditOperation(str(operation).replace("'",'"'))
         
         response = {
-            "4":{
-                "transaction": {
+            4:{
                     "id": 4,
                     "consumer_id": 10,
                     "score": 600,
@@ -149,7 +148,6 @@ class Test_Operations(TestCase):
                     "requested_value": 10000,
                     "installments": 1200,
                     "time": "2019-02-13T10:00:00.000Z",
-                }
             }
         }
         self.assertEqual(response, OPERATIONS)
