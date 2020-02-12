@@ -1,5 +1,4 @@
 import json
-from typing import Callable, Dict
 from rules import (
     compromised_income,
     doubled_transactions,
@@ -18,7 +17,7 @@ def isJson(string: str) -> bool:
 
 
 def verifyRules(operation: dict, rules: list, index: int = 0, **kwargs) -> dict:
-    """Ruturns True if operation pass to all rules and False if not
+    """Ruturns operation with a list of all violations faunds
     
         Arguments:
             operation {dict} -- operation dict {"transaction":dict, "status":dict}
@@ -28,7 +27,7 @@ def verifyRules(operation: dict, rules: list, index: int = 0, **kwargs) -> dict:
             index {int} -- internal index (default: {0})
         
         Returns:
-            bool -- [description]
+            dict -- operation{dict}
     """
 
     if len(rules) > 0:
@@ -40,7 +39,20 @@ def verifyRules(operation: dict, rules: list, index: int = 0, **kwargs) -> dict:
         return operation
 
 
-def makeOperations(json_operations: str, list_rules: list, database) -> list:
+def makeOperations(json_operations: str, list_rules: list, database:dict) -> list:
+    """Convert json_operation to an Object dict and check the rules for each transaction found
+    
+    Arguments:
+        json_operations {str} -- String in json format
+        list_rules {list} -- list of all rules of operation
+        database {dict} -- Databese to double transaction checking 
+    
+    Raises:
+        TypeError: Raises error if de str are not in json format
+    
+    Returns:
+        list -- List with all verified operations
+    """    
     if isJson(json_operations.replace("'", '"')):
         list_operations = json.loads(json_operations.replace("'", '"'))
         finish_operations = []
@@ -64,6 +76,7 @@ def makeOperations(json_operations: str, list_rules: list, database) -> list:
 
 #Operations
 def addCreditOperation(json_operation:str) -> list:
+    """ Add Credit Operation on database"""
     list_rules = [compromised_income, doubled_transactions, low_score, minimum_installments]
 
     responses = []
